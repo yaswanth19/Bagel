@@ -22,5 +22,4 @@ wheel
 ninja
 bitsandbytes
 xlsxwriter
-triton ; sys_platform != 'win32'
-triton-windows ; sys_platform == 'win32'
+triton
