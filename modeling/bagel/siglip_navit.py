@@ -188,7 +188,9 @@ class SiglipVisionEmbeddings(nn.Module):
     ) -> torch.Tensor:
 
         patch_embeds = self.patch_embedding(packed_pixel_values)
+        print("Patch embeddings shape:", patch_embeds.shape)
         if not self.config.rope:
+            print("Using position embeddings Not ROPE")
             embeddings = patch_embeds + self.position_embedding(packed_flattened_position_ids)
         else:
             embeddings = patch_embeds
