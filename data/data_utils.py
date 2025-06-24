@@ -41,14 +41,14 @@ def create_sparse_mask(document_lens, split_lens, attn_modes, device):
 
 
 def patchify(image, patch_size):
-    print("In patchify image input shape", image.shape)
+    print("In patchify image input shape", image.size)
     p = patch_size
     c, h, w = image.shape
     assert h % p == 0 and w % p == 0
     image = image.reshape(c, h // p, p, w // p, p)
     image = torch.einsum("chpwq->hwpqc", image)
     image = image.reshape(-1, p**2 * c)
-    print("In patchify image output shape", image.shape)
+    print("In patchify image output shape", image.size)
     return image
 
 
