@@ -314,12 +314,15 @@ class Bagel(PreTrainedModel):
             curr += 1
             _curr += 1
 
+            print("Image shape:", image.shape)
             image_tensor = transforms(image)
+            print("Transformed image shape:", image_tensor.shape)
             vit_position_ids = self.get_flattened_position_ids(
                 image_tensor.size(1), image_tensor.size(2), 
                 self.vit_patch_size, 
                 max_num_patches_per_side=self.vit_max_num_patch_per_side
             )
+            print("Vit position ids:", vit_position_ids)
             vit_tokens = patchify(image_tensor, self.vit_patch_size)
             packed_vit_tokens.append(vit_tokens)
             num_img_tokens = vit_tokens.shape[0]
@@ -341,6 +344,7 @@ class Bagel(PreTrainedModel):
             newlens.append(curr_kvlen + num_img_tokens + 2)
             new_rope.append(curr_position_id + 1)
 
+        print("txt indices in prepare_vit_image:",packed_text_ids)
         generation_input = {
             "packed_text_ids": torch.tensor(packed_text_ids, dtype=torch.long),
             "packed_text_indexes": torch.tensor(packed_text_indexes, dtype=torch.long),
@@ -386,8 +390,12 @@ class Bagel(PreTrainedModel):
             cu_seqlens=cu_seqlens,
             max_seqlen=max_seqlen,
         )
+        print("Vit token embeds shape:", packed_vit_token_embed.shape)
         packed_vit_token_embed = self.connector(packed_vit_token_embed)
+        print("After connector, vit token embeds shape:", packed_vit_token_embed.shape)
         pos_emb = self.vit_pos_embed(packed_vit_position_ids)
+        print("Vit position embeds shape:", pos_emb.shape)
+        print("Packed vit token indexes:", packed_vit_token_indexes)
         packed_vit_token_embed = packed_vit_token_embed + pos_emb
         if packed_vit_token_embed.dtype != packed_sequence.dtype:
             packed_vit_token_embed = packed_vit_token_embed.to(packed_sequence.dtype)
