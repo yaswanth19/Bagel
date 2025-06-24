@@ -55,6 +55,7 @@ def patchify(image, patch_size):
 def get_flattened_position_ids_extrapolate(img_h, img_w, patch_size, max_num_patches_per_side):
     print("Using extrapolate position ids")
     num_patches_h, num_patches_w = img_h // patch_size, img_w // patch_size
+    print(num_patches_h, num_patches_w, max_num_patches_per_side)
     coords_h = torch.arange(0, num_patches_h)
     coords_w = torch.arange(0, num_patches_w)
     pos_ids = (coords_h[:, None] * max_num_patches_per_side + coords_w).flatten()
