@@ -41,16 +41,19 @@ def create_sparse_mask(document_lens, split_lens, attn_modes, device):
 
 
 def patchify(image, patch_size):
+    print("In patchify image input shape", image.shape)
     p = patch_size
     c, h, w = image.shape
     assert h % p == 0 and w % p == 0
     image = image.reshape(c, h // p, p, w // p, p)
     image = torch.einsum("chpwq->hwpqc", image)
     image = image.reshape(-1, p**2 * c)
+    print("In patchify image output shape", image.shape)
     return image
 
 
 def get_flattened_position_ids_extrapolate(img_h, img_w, patch_size, max_num_patches_per_side):
+    print("Using extrapolate position ids")
     num_patches_h, num_patches_w = img_h // patch_size, img_w // patch_size
     coords_h = torch.arange(0, num_patches_h)
     coords_w = torch.arange(0, num_patches_w)
@@ -59,6 +62,7 @@ def get_flattened_position_ids_extrapolate(img_h, img_w, patch_size, max_num_pat
 
 
 def get_flattened_position_ids_interpolate(img_h, img_w, patch_size, max_num_patches_per_side):
+    print("Using interpolate position ids")
     num_patches_h, num_patches_w = img_h // patch_size, img_w // patch_size
     boundaries = torch.arange(1 / max_num_patches_per_side, 1.0, 1 / max_num_patches_per_side)
     fractional_coords_h = torch.arange(0, 1 - 1e-6, 1 / num_patches_h)
